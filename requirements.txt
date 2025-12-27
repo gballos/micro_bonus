@@ -1,0 +1,12 @@
+numpy
+torch
+torchvision 
+brevitas
+pandas
+timm 
+detectors
+matplotlib
+tqdm
+scikit-learn
+seaborn
+python-dotenv
