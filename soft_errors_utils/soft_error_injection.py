@@ -63,31 +63,39 @@ def error_injection_to_quant_model_weights(
         num_elems = int_tensor.numel()
         total_bits = num_elems * bit_width
 
-        # Per-bit Bernoulli sampling for flips: this ensures BER controls
-        # the expected number of flipped bits precisely.
         bit_check_tensor = torch.rand(total_bits, device=device)
-        flip_mask_bool = (bit_check_tensor < float(soft_error_rate))
-        positions = torch.nonzero(flip_mask_bool, as_tuple=False).flatten()
-        num_bitflips = int(positions.numel())
+        flip_mask_bool = (bit_check_tensor < soft_error_rate)
+        num_bitflips = int(flip_mask_bool.sum().item())
 
         flat = int_tensor.view(-1).clone()
         elems_changed = 0
 
         flips_applied = 0
-        if num_bitflips > 0:
-            # If a specific bit index is requested, filter positions accordingly
+        for _ in range(num_bitflips):
+            idx = random.randint(0, flat.numel() - 1)
             if bit_idx is not None and bit_idx != "all":
-                positions = positions[(positions % bit_width) == bit_idx]
-
-            for pos in positions:
-                pos_i = int(pos.item())
-                elem_idx = pos_i // bit_width
-                b = pos_i % bit_width
-
-                # For standard bitflip model, flip the selected bit using XOR
-                if fault_model == 'bitflip':
-                    flat[elem_idx] = int(flat[elem_idx].item()) ^ (1 << int(b))
-                flips_applied += 1
+                if bit_idx == 3 and bit_width == 4:
+                    for b in range(3, 8):
+                        if fault_model == 'bitflip':
+                            flat[idx] ^= (1 << b) 
+                        ## elif add more fault models if needed
+                    flips_applied += 1
+                else:
+                    flat[idx] &= (1 << bit_idx)
+                    flips_applied += 1
+            else:
+                b = random.randint(0, bit_width - 1)
+                if b == 3 and bit_width == 4:
+                    for bb in range(3, 8):
+                        if fault_model == 'bitflip':
+                            flat[idx] ^= (1 << bb) 
+                         ## elif add more fault models if needed
+                    flips_applied += 1
+                else:
+                    if fault_model == 'bitflip':
+                        flat[idx] ^= ~(1 << b)
+                     ## elif add more fault models if needed
+                    flips_applied += 1
 
         if data_type in ['int8', 'int4']:
             flipped_tensor = flat.view_as(int_tensor)
@@ -130,7 +138,159 @@ def error_injection_to_quant_model_weights(
     return report
 
 
-def apply_ser_to_quant_model(
+def bitflip_int_tensor(
+    int_tensor: torch.Tensor,
+    bit_width: int,
+    ber: float,
+    bit_idx: Optional[int] = None,
+    mantissa_only: bool = True,
+) -> Tuple[torch.Tensor, int]:
+    
+    '''
+    Apply bit-flip errors to an integer tensor based on the specified bit error rate (BER).
+
+    :param int_tensor: Weight tensor in integer representation (int32, uint16, etc.)
+    :param bit_width: Bit width of each element in the tensor (8, 16, 32)
+    :param ber: Soft error rate (bit error rate)
+    :param bit_idx: Specific bit index to flip, if None random bits are flipped
+    :param mantissa_only: For float32/float16, flip only mantissa bits (more realistic)
+                          This avoids catastrophic changes from exponent/sign flips
+    :return: Tuple of (modified tensor, number of bits flipped)
+
+    '''
+
+    flat = int_tensor.view(-1)
+
+    total_bits = flat.numel() * bit_width
+    bit_mask = torch.rand(total_bits, device=flat.device) < ber
+    bit_indices = torch.where(bit_mask)[0]
+
+    if bit_indices.numel() == 0:
+        return int_tensor, 0
+
+    elem_idx = (bit_indices // bit_width).long()
+    bit_idx_rand = (bit_indices % bit_width).long()
+
+    # For mantissa-only flips in float32: bits 0-22 are mantissa, 23-30 are exponent, 31 is sign
+    # For float16: bits 0-9 are mantissa, 10-14 are exponent, 15 is sign
+    if mantissa_only and bit_width == 32:
+        # Keep only mantissa bits (0-22)
+        valid_mantissa = bit_idx_rand < 23
+        elem_idx = elem_idx[valid_mantissa]
+        bit_idx_rand = bit_idx_rand[valid_mantissa]
+    elif mantissa_only and bit_width == 16:
+        # Keep only mantissa bits (0-9)
+        valid_mantissa = bit_idx_rand < 10
+        elem_idx = elem_idx[valid_mantissa]
+        bit_idx_rand = bit_idx_rand[valid_mantissa]
+
+    # Bounds check to prevent out-of-range access
+    valid_mask = elem_idx < flat.numel()
+    elem_idx = elem_idx[valid_mask]
+    bit_idx_rand = bit_idx_rand[valid_mask]
+
+    flips_count = 0
+    for e, b in zip(elem_idx, bit_idx_rand):
+        e_val = e.item() if isinstance(e, torch.Tensor) else e
+        b_val = b.item() if isinstance(b, torch.Tensor) else b
+        
+        if e_val >= flat.numel() or b_val >= bit_width:
+            continue
+        
+        if bit_idx is None:
+            flat[e_val] ^= (1 << b_val)
+        else:
+            if bit_idx < bit_width:
+                flat[e_val] ^= (1 << bit_idx)
+        flips_count += 1
+
+    return int_tensor, flips_count
+
+def error_injection_to_fp_model_weights(
+    model: torch.nn.Module,
+    soft_error_rate: float = 1e-6,   # BER
+    target_layers=None,
+    include_linear=False,
+    seed=None,
+    verbose=False,
+    mantissa_only: bool = True,
+):
+    """
+    Inject soft errors into floating-point model weights.
+    
+    :param model: The model to corrupt
+    :param soft_error_rate: Bit error rate (fraction of bits to flip)
+    :param target_layers: Specific layers to target
+    :param include_linear: Include linear layers
+    :param seed: Random seed for reproducibility
+    :param verbose: Print detailed statistics
+    :param mantissa_only: If True, only flip mantissa bits (realistic + avoids catastrophic exponent flips)
+    """
+    if seed is not None:
+        torch.manual_seed(seed)
+        random.seed(seed)
+
+    eligible = []
+    for name, module in model.named_modules():
+        if hasattr(module, "weight") and module.weight is not None:
+            if not include_linear and isinstance(module, torch.nn.Linear):
+                continue
+            eligible.append((name, module))
+
+    if target_layers is not None:
+        if not isinstance(target_layers, Iterable):
+            target_layers = [target_layers]
+        if any(isinstance(t, str) for t in target_layers):
+            name_set = set(t for t in target_layers if isinstance(t, str))
+            eligible = [(n, m) for (n, m) in eligible if n in name_set]
+        else:
+            idx_set = set(int(t) for t in target_layers)
+            eligible = [itm for i, itm in enumerate(eligible) if i in idx_set]
+
+    report = []
+
+    for lname, tgt in eligible:
+        w = tgt.weight.data
+        clean_float = w.clone()
+
+        if w.dtype == torch.float32:
+            int_view = w.view(torch.int32)
+            bit_width = 32
+        elif w.dtype == torch.float16:
+            # For float16 (IEEE 754 half-precision), use uint16 to properly interpret bits
+            # float16 layout: 1 sign bit, 5 exponent bits, 10 mantissa bits
+            int_view = w.view(torch.uint16)
+            bit_width = 16
+        else:
+            continue  # skip non-FP
+
+        # Apply bit flips with mantissa-only option
+        _, bits_flipped = bitflip_int_tensor(
+            int_tensor=int_view,
+            bit_width=bit_width,
+            ber=soft_error_rate,
+            mantissa_only=mantissa_only,
+        )
+
+        # Calculate actual weight change magnitude
+        weight_diff = torch.abs(w - clean_float)
+        max_weight_change = weight_diff.max().item()
+        mean_weight_change = weight_diff.mean().item()
+        elems_changed = torch.count_nonzero(weight_diff > 0).item()
+        
+        report.append((lname, bit_width, elems_changed))
+
+        if verbose:
+            print(f"[FP] {lname}:")
+            print(f"      dtype={w.dtype}, bit_width={bit_width}")
+            print(f"      bits_flipped={bits_flipped}, elems_with_change={elems_changed}")
+            print(f"      max_weight_change={max_weight_change:.6e}, mean_weight_change={mean_weight_change:.6e}")
+            print(f"      weight_range=[{w.min().item():.6e}, {w.max().item():.6e}]")
+
+    return report
+
+
+def apply_ser_to_model(
         model, 
         soft_error_rate, 
         bit_width = 8, 
@@ -139,22 +299,41 @@ def apply_ser_to_quant_model(
         include_linear = True,
         target_layers: Optional[Union[Iterable[str], Iterable[int]]] = None, 
         random_seed: Optional[int] = None,
-        verbose: bool = False): 
+        verbose: bool = False,
+        mantissa_only: bool = True): 
+    """
+    Apply soft error injection to model weights.
+    
+    :param mantissa_only: For FP models, only flip mantissa bits (realistic, avoids catastrophic exponent flips)
+    """
     
     if random_seed is not None:
         random.seed(random_seed)
         torch.manual_seed(random_seed)
-
-    error_injection_to_quant_model_weights(
-        model = model,
-        soft_error_rate = soft_error_rate,
-        bit_width = bit_width,
-        data_type = data_type,
-        bit_idx = bit_idx,
-        include_linear = include_linear,
-        target_layers = target_layers,
-        seed = random_seed,
-        verbose = verbose,
-    )
+    if data_type in ['int8', 'int4']:
+        print("Starting soft error injection to quantized model weights...")
+        error_injection_to_quant_model_weights(
+            model = model,
+            soft_error_rate = soft_error_rate,
+            bit_width = bit_width,
+            data_type = data_type,
+            bit_idx = bit_idx,
+            include_linear = include_linear,
+            target_layers = target_layers,
+            seed = random_seed,
+            verbose = verbose,
+        )
+    if data_type in ['fp16', 'fp32']:
+        print("Starting soft error injection to floating-point model weights...")
+        error_injection_to_fp_model_weights(
+            model = model,
+            soft_error_rate = soft_error_rate,
+            target_layers = target_layers,
+            include_linear = include_linear,
+            seed = random_seed,
+            verbose = verbose,
+            mantissa_only = mantissa_only,
+        )
     print("Soft error injection completed.")
     return model
+
