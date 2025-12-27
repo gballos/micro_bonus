@@ -9,7 +9,8 @@ from model_utils.quantize_model import (replace_layers_with_quant, calibrate_mod
 from model_utils.model_info import create_fp_model, export_model
 from model_utils.prepare_cifar10 import load_cifar10_data
 from model_utils.prepare_cifar100 import load_cifar100_data
-from soft_errors_utils.soft_error_injection import apply_ser_to_quant_model
+from soft_errors_utils.soft_error_injection import apply_ser_to_model
+
 
 def main():
     parser = argparse.ArgumentParser(description = "Evaluate DNN model under soft errors.")
@@ -21,7 +22,7 @@ def main():
         "--dataset", type = str, default = 'cifar10', help = "Dataset used for Evaluation."
     )
     parser.add_argument(
-        "--data_type", type = str, default = 'int8', choices = ['int8', 'int4'], 
+        "--data_type", type = str, default = 'int8', choices = ['int8', 'int4', 'fp16','fp32'], 
         help = "Data type for quantization."
     )
     parser.add_argument(
@@ -68,33 +69,61 @@ def main():
     fp_accuracy = evaluate_top1(model, test_loader, device = device)
     print(f"Floating Point Model Accuracy: {fp_accuracy:.2f}%")
 
-    if args.data_type in ['int8']:
+    if args.data_type == 'fp32':
+        bit_width = 32
+    elif args.data_type == 'fp16':
+        bit_width = 16
+    elif args.data_type == 'int8':
         bit_width = 8
-    elif args.data_type in ['int4']:
+    elif args.data_type == 'int4':
         bit_width = 4
 
-    print("Quantizing with data type", args.data_type)
+    is_quant = args.data_type in ['int8', 'int4']
+
+    if is_quant:
+        print("Quantizing with data type", args.data_type)
+    
     STORE_DIR = 'stored_models'
     MODEL_PATH = os.path.join(STORE_DIR, f"{dnn_model_name}_{args.dataset}_{args.data_type}.pt")
 
-    if os.path.exists(MODEL_PATH):
-        print(f"Loading quantized model from {MODEL_PATH}")
-        quantized_model = replace_layers_with_quant(model, bit_width = bit_width, calibrated = True, 
-                                                    verbose = False).to(device)
-        quantized_model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    if is_quant:
+        if os.path.exists(MODEL_PATH):
+            print(f"Loading quantized model from {MODEL_PATH}")
+            quantized_model = replace_layers_with_quant(model, bit_width = bit_width, calibrated = True, 
+                                                        verbose = False).to(device)
+            quantized_model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
 
+        else:
+            quantized_model = replace_layers_with_quant(model, bit_width = bit_width, calibrated = False, 
+                                                        verbose = False).to(device)
+            calibrate_model(quantized_model, calibration_loader = calib_loader, device = device)
+            export_model(quantized_model, MODEL_PATH)
+
+        quantized_model.to(device)
+        acc_clean = evaluate_top1(quantized_model, test_loader, device = device)
+        print(f"Accuracy of Quantized Model without Errors: {acc_clean:.2f}%")
     else:
-        quantized_model = replace_layers_with_quant(model, bit_width = bit_width, calibrated = False, 
-                                                    verbose = False).to(device)
-        calibrate_model(quantized_model, calibration_loader = calib_loader, device = device)
-        export_model(quantized_model, MODEL_PATH)
+        # Floating-point path (fp32 / fp16)
+        # Convert model to target precision BEFORE evaluation
+        if args.data_type == 'fp16':
+            # For fp16, convert model to half but keep BatchNorm in fp32 for stability
+            model = model.half()
+            
+            print(f"Model converted to float16 (weights)")
+        elif args.data_type == 'fp32':
+            model = model.float()
+            print(f"Model converted to float32 (single precision)")
 
-    quantized_model.to(device)
-    acc_clean = evaluate_top1(quantized_model, test_loader, device = device)
-    print(f"Accuracy of Quantized Model without Errors: {acc_clean:.2f}%")
+        model.to(device)
 
-    corrupted_model = apply_ser_to_quant_model(
-        model = quantized_model,
+        if args.verbose:
+            print("Evaluating clean model before error injection...")
+
+        acc_clean = evaluate_top1(model, test_loader, device = device)
+        print(f"Accuracy of {args.data_type.upper()} Model without Errors: {acc_clean:.2f}%")
+
+    corrupted_model = apply_ser_to_model(
+        model = quantized_model if is_quant else model,
         soft_error_rate = args.ber,
         bit_width = bit_width,
         data_type = args.data_type,
