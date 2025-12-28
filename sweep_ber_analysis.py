@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed.")
     return parser.parse_args()
 
-def run_job(script_path, model_name, dataset, data_type, ber, seed):
+def run_job(script_path, model_name, dataset, data_type, ber, seed, bit_idx='all'):
     """
     Executes the worker script for a specific configuration.
     Relies on the worker script's internal logic to skip if results exist.
@@ -45,6 +45,7 @@ def run_job(script_path, model_name, dataset, data_type, ber, seed):
         "--ber", str(ber),
         "--random_seed", str(seed),
         "--verbose", "False",
+        "--bit_idx", str(bit_idx),
     ]
 
     try:
@@ -83,15 +84,29 @@ def main():
         for data_type, ber in tasks:
             # Update description to show what's currently running
             pbar.set_description(f"Running {data_type} @ {ber:.1e}")
+
+            if data_type in ['fp16', 'fp32']:
+                bit_idx = 'mantissa'
+                success, error_msg = run_job(
+                    args.script, 
+                    args.model_name, 
+                    args.dataset, 
+                    data_type, 
+                    ber, 
+                    args.seed,
+                    bit_idx=bit_idx,
+                )
             
             success, error_msg = run_job(
-                args.script, 
-                args.model_name, 
-                args.dataset, 
-                data_type, 
-                ber, 
-                args.seed
-            )
+                    args.script, 
+                    args.model_name, 
+                    args.dataset, 
+                    data_type, 
+                    ber, 
+                    args.seed,
+                )
+
+
             
             if not success:
                 # If a job fails, we print above the progress bar so it persists
