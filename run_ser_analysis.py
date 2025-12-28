@@ -110,18 +110,14 @@ def main():
         model = model.float()
         
         if args.data_type == 'fp16':
-            print(f"Simulating float16 precision (Pseudo-FP16)...")
+            if args.verbose: print("Converting model to float16...")
             # Iterate over all parameters and truncate precision to FP16
             # Iterate over all modules (layers) in the model
             for module in model.modules():
-                # Check if the module is a Convolution or Linear layer
-                if isinstance(module, (nn.Conv2d, nn.Linear)):
-                    for param in module.parameters():
-                        if param.requires_grad:
-                        # Precision truncation: fp32 -> fp16
-                            param.data = param.data.half()
-            # Note: BatchNorm running stats should usually stay high precision 
-            # for stability, so we generally don't truncate .running_mean/var
+                for param in module.parameters():
+                    if param.requires_grad:
+                    # Precision truncation: fp32 -> fp16
+                        param.data = param.data.half()
             print(f"Model converted to float16 (weights)")          
         elif args.data_type == 'fp32':
             print(f"Model converted to float32 (single precision)")
