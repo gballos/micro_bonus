@@ -27,7 +27,7 @@ def main():
         help = "Data type for quantization."
     )
     parser.add_argument(
-        "--bit_idx", type = int, default = 'all', help = "Specific bit index for soft errors (None means that errors will be injected in all bits)."
+        "--bit_idx", type = str, default = 'all', help = "Specific bit index for soft errors ('all' means that errors will be injected in all bits)."
     )
     parser.add_argument(
         "--ber", 
