@@ -214,6 +214,7 @@ def error_injection_to_fp_model_weights(
     seed=None,
     verbose=False,
     mantissa_only: bool = True,
+    data_type: str = 'fp32',
 ):
     """
     Inject soft errors into floating-point model weights.
@@ -253,10 +254,10 @@ def error_injection_to_fp_model_weights(
         w = tgt.weight.data
         clean_float = w.clone()
 
-        if w.dtype == torch.float32:
+        if data_type == 'fp32':
             int_view = w.view(torch.int32)
             bit_width = 32
-        elif w.dtype == torch.float16:
+        elif data_type == 'fp16':
             # For float16 (IEEE 754 half-precision), use uint16 to properly interpret bits
             # float16 layout: 1 sign bit, 5 exponent bits, 10 mantissa bits
             int_view = w.view(torch.uint16)
@@ -272,8 +273,9 @@ def error_injection_to_fp_model_weights(
             mantissa_only=mantissa_only,
         )
 
+
         # Calculate actual weight change magnitude
-        weight_diff = torch.abs(w - clean_float)
+        weight_diff = torch.abs(tgt.weight.data - clean_float)
         max_weight_change = weight_diff.max().item()
         mean_weight_change = weight_diff.mean().item()
         elems_changed = torch.count_nonzero(weight_diff > 0).item()
@@ -282,7 +284,7 @@ def error_injection_to_fp_model_weights(
 
         if verbose:
             print(f"[FP] {lname}:")
-            print(f"      dtype={w.dtype}, bit_width={bit_width}")
+            print(f"      dtype={data_type}, bit_width={bit_width}")
             print(f"      bits_flipped={bits_flipped}, elems_with_change={elems_changed}")
             print(f"      max_weight_change={max_weight_change:.6e}, mean_weight_change={mean_weight_change:.6e}")
             print(f"      weight_range=[{w.min().item():.6e}, {w.max().item():.6e}]")
@@ -306,6 +308,8 @@ def apply_ser_to_model(
     
     :param mantissa_only: For FP models, only flip mantissa bits (realistic, avoids catastrophic exponent flips)
     """
+
+    model.to(torch.device('cpu'))
     
     if random_seed is not None:
         random.seed(random_seed)
@@ -333,6 +337,7 @@ def apply_ser_to_model(
             seed = random_seed,
             verbose = verbose,
             mantissa_only = mantissa_only,
+            data_type = data_type,
         )
     print("Soft error injection completed.")
     return model
