@@ -1,6 +1,7 @@
 import os
 import argparse
 import torch
+import torch.nn as nn
 
 from export_result import save_results_to_json, check_if_run_exists
 
@@ -104,14 +105,25 @@ def main():
         print(f"Accuracy of Quantized Model without Errors: {acc_clean:.2f}%")
     else:
         # Floating-point path (fp32 / fp16)
-        # Convert model to target precision BEFORE evaluation
+        
+        # Ensure model is in FP32 initially for speed
+        model = model.float()
+        
         if args.data_type == 'fp16':
-            # For fp16, convert model to half but keep BatchNorm in fp32 for stability
-            model = model.half()
-            
-            print(f"Model converted to float16 (weights)")
+            print(f"Simulating float16 precision (Pseudo-FP16)...")
+            # Iterate over all parameters and truncate precision to FP16
+            # Iterate over all modules (layers) in the model
+            for module in model.modules():
+                # Check if the module is a Convolution or Linear layer
+                if isinstance(module, (nn.Conv2d, nn.Linear)):
+                    for param in module.parameters():
+                        if param.requires_grad:
+                        # Precision truncation: fp32 -> fp16
+                            param.data = param.data.half()
+            # Note: BatchNorm running stats should usually stay high precision 
+            # for stability, so we generally don't truncate .running_mean/var
+            print(f"Model converted to float16 (weights)")          
         elif args.data_type == 'fp32':
-            model = model.float()
             print(f"Model converted to float32 (single precision)")
 
         model.to(device)
@@ -121,6 +133,8 @@ def main():
 
         acc_clean = evaluate_top1(model, test_loader, device = device)
         print(f"Accuracy of {args.data_type.upper()} Model without Errors: {acc_clean:.2f}%")
+
+    model.to(torch.device('cpu'))
 
     corrupted_model = apply_ser_to_model(
         model = quantized_model if is_quant else model,
@@ -132,6 +146,8 @@ def main():
         random_seed = args.random_seed,
         verbose = args.verbose,
     )
+
+    model.to(device)
 
     acc_corrupted = evaluate_top1(corrupted_model, test_loader, device = device)
     print(f"Accuracy with BER = {args.ber}: {acc_corrupted:.2f}%")
