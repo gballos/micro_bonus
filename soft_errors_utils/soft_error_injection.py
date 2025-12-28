@@ -254,10 +254,10 @@ def error_injection_to_fp_model_weights(
         w = tgt.weight.data
         clean_float = w.clone()
 
-        if data_type == 'fp32':
+        if data_type == 'fp32' and w.dtype == torch.float32:
             int_view = w.view(torch.int32)
             bit_width = 32
-        elif data_type == 'fp16':
+        elif data_type == 'fp16' and w.dtype == torch.float16:
             # For float16 (IEEE 754 half-precision), use uint16 to properly interpret bits
             # float16 layout: 1 sign bit, 5 exponent bits, 10 mantissa bits
             int_view = w.view(torch.uint16)
@@ -284,7 +284,7 @@ def error_injection_to_fp_model_weights(
 
         if verbose:
             print(f"[FP] {lname}:")
-            print(f"      dtype={data_type}, bit_width={bit_width}")
+            print(f"      dtype={w.dtype}, bit_width={bit_width}")
             print(f"      bits_flipped={bits_flipped}, elems_with_change={elems_changed}")
             print(f"      max_weight_change={max_weight_change:.6e}, mean_weight_change={mean_weight_change:.6e}")
             print(f"      weight_range=[{w.min().item():.6e}, {w.max().item():.6e}]")
