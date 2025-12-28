@@ -143,7 +143,6 @@ def bitflip_int_tensor(
     bit_width: int,
     ber: float,
     bit_idx: Optional[int] = None,
-    mantissa_only: bool = True,
 ) -> Tuple[torch.Tensor, int]:
     
     '''
@@ -153,8 +152,6 @@ def bitflip_int_tensor(
     :param bit_width: Bit width of each element in the tensor (8, 16, 32)
     :param ber: Soft error rate (bit error rate)
     :param bit_idx: Specific bit index to flip, if None random bits are flipped
-    :param mantissa_only: For float32/float16, flip only mantissa bits (more realistic)
-                          This avoids catastrophic changes from exponent/sign flips
     :return: Tuple of (modified tensor, number of bits flipped)
 
     '''
@@ -173,16 +170,18 @@ def bitflip_int_tensor(
 
     # For mantissa-only flips in float32: bits 0-22 are mantissa, 23-30 are exponent, 31 is sign
     # For float16: bits 0-9 are mantissa, 10-14 are exponent, 15 is sign
-    if mantissa_only and bit_width == 32:
+    if bit_idx == 'mantissa' and bit_width == 32:
         # Keep only mantissa bits (0-22)
         valid_mantissa = bit_idx_rand < 23
         elem_idx = elem_idx[valid_mantissa]
         bit_idx_rand = bit_idx_rand[valid_mantissa]
-    elif mantissa_only and bit_width == 16:
+    elif bit_idx == 'mantissa' and bit_width == 16:
         # Keep only mantissa bits (0-9)
         valid_mantissa = bit_idx_rand < 10
         elem_idx = elem_idx[valid_mantissa]
         bit_idx_rand = bit_idx_rand[valid_mantissa]
+    elif bit_idx == 'all':
+        pass  # all bits are valid
 
     # Bounds check to prevent out-of-range access
     valid_mask = elem_idx < flat.numel()
@@ -213,7 +212,7 @@ def error_injection_to_fp_model_weights(
     include_linear=False,
     seed=None,
     verbose=False,
-    mantissa_only: bool = True,
+    bit_idx: Optional[int] = None,
     data_type: str = 'fp32',
 ):
     """
@@ -270,7 +269,7 @@ def error_injection_to_fp_model_weights(
             int_tensor=int_view,
             bit_width=bit_width,
             ber=soft_error_rate,
-            mantissa_only=mantissa_only,
+            bit_idx=bit_idx,
         )
 
 
@@ -302,7 +301,7 @@ def apply_ser_to_model(
         target_layers: Optional[Union[Iterable[str], Iterable[int]]] = None, 
         random_seed: Optional[int] = None,
         verbose: bool = False,
-        mantissa_only: bool = True): 
+    ): 
     """
     Apply soft error injection to model weights.
     
@@ -334,7 +333,7 @@ def apply_ser_to_model(
             include_linear = include_linear,
             seed = random_seed,
             verbose = verbose,
-            mantissa_only = mantissa_only,
+            bit_idx = bit_idx,
             data_type = data_type,
         )
     print("Soft error injection completed.")
