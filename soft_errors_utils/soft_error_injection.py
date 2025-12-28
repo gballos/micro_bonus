@@ -35,7 +35,7 @@ def bitflip_int_tensor(
                     Accepts numeric strings like "3".
     """
     
-    # 1. Normalize bit_idx
+    # Normalize bit_idx
     # If it's a digit string like "3", convert to int 3.
     is_specific_bit = False
     if isinstance(bit_idx, str) and bit_idx.isdigit():
@@ -46,7 +46,7 @@ def bitflip_int_tensor(
 
     flat = int_tensor.view(-1)
 
-    # 2. Generate Random Errors
+    # Generate Random Errors
     total_bits = flat.numel() * bit_width
     bit_mask = torch.rand(total_bits, device=flat.device) < ber
     bit_indices = torch.where(bit_mask)[0]
@@ -57,7 +57,7 @@ def bitflip_int_tensor(
     elem_idx = (bit_indices // bit_width).long()
     bit_idx_rand = (bit_indices % bit_width).long()
 
-    # 3. Filter based on semantic bit_idx (e.g., "mantissa")
+    # Filter based on semantic bit_idx (e.g., "mantissa")
     if bit_idx == 'mantissa' and bit_width == 32:
         # FP32: Bits 0-22 are mantissa
         valid_mantissa = bit_idx_rand < 23
@@ -76,7 +76,7 @@ def bitflip_int_tensor(
 
     flips_count = 0
     
-    # 4. Apply Flips
+    # Apply Flips
     # Using a loop for safety with mixed types, though vectorization is possible.
     # We iterate only over the indices selected for flipping.
     for e, b in zip(elem_idx, bit_idx_rand):
@@ -298,17 +298,17 @@ def error_injection_to_fp_model_weights(
              if verbose:
                  print(f"pseudo-FP16 injection on {lname}")
                  
-             # 1. Cast to Half to get correct bit structure
+             # Cast to Half to get correct bit structure
              w_half = w.half()
              
-             # 2. View as Int16
+             # View as Int16
              int_view = w_half.view(torch.int16)
              bit_width = 16
              
-             # 3. Flip Bits
+             # Flip Bits
              _, bits_flipped = bitflip_int_tensor(int_view, bit_width, soft_error_rate, bit_idx)
              
-             # 4. Cast back to FP32 and assign to model
+             # Cast back to FP32 and assign to model
              tgt.weight.data = w_half.float()
         
         else:
