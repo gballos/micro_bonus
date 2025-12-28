@@ -308,8 +308,6 @@ def apply_ser_to_model(
     
     :param mantissa_only: For FP models, only flip mantissa bits (realistic, avoids catastrophic exponent flips)
     """
-
-    model.to(torch.device('cpu'))
     
     if random_seed is not None:
         random.seed(random_seed)
