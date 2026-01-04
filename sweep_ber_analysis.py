@@ -67,6 +67,8 @@ def run_job(script_path, model_name, dataset, data_type, ber, seed, bit_idx='all
 def main():
     args = parse_args()
 
+    bit_idx = ['mantissa', 'exponent', 'sign']
+
     # 1. Flatten the configuration list for the progress bar
     tasks = []
     for dtype, ber_list in BER_RANGES.items():
@@ -86,16 +88,16 @@ def main():
             pbar.set_description(f"Running {data_type} @ {ber:.1e}")
 
             if data_type in ['fp16', 'fp32']:
-                bit_idx = 'mantissa'
-                success, error_msg = run_job(
-                    args.script, 
-                    args.model_name, 
-                    args.dataset, 
-                    data_type, 
-                    ber, 
-                    args.seed,
-                    bit_idx=bit_idx,
-                )
+                for bit in bit_idx:
+                    success, error_msg = run_job(
+                        args.script, 
+                        args.model_name, 
+                        args.dataset, 
+                        data_type, 
+                        ber, 
+                        args.seed,
+                        bit_idx=bit,
+                    )
             
             success, error_msg = run_job(
                     args.script, 
