@@ -8,6 +8,7 @@ import argparse
 import subprocess
 import sys
 from tqdm import tqdm
+import numpy as np
 
 # Default Configuration
 DEFAULT_MODEL = "resnet18"
@@ -16,12 +17,8 @@ DEFAULT_WORKER_SCRIPT = "run_ser_analysis.py"
 RANDOM_SEED = 42
 
 # BER ranges to sweep
-BER_RANGES = {
-    'int8': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3],
-    'int4': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3],
-    'fp32': [1e-6, 5e-6, 1e-5, 5e-5, 1e-4],
-    'fp16': [1e-7, 5e-7, 1e-6, 5e-6, 1e-5],
-}
+BER_RANGES = np.logspace(-9, -2, num=16)
+DATA_TYPES = ['int4', 'int8', 'fp16', 'fp32']
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run comprehensive BER sweep analysis.")
@@ -70,10 +67,7 @@ def main():
     bit_idx = ['mantissa', 'exponent', 'sign']
 
     # 1. Flatten the configuration list for the progress bar
-    tasks = []
-    for dtype, ber_list in BER_RANGES.items():
-        for ber in ber_list:
-            tasks.append((dtype, ber))
+    tasks = [(dtype, ber) for dtype in DATA_TYPES for ber in BER_RANGES]
 
     print(f"Starting sweep for {args.model_name} on {args.dataset}")
     print(f"Total configurations to run: {len(tasks)}")
