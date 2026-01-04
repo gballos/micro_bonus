@@ -63,11 +63,31 @@ def bitflip_int_tensor(
         valid_mantissa = bit_idx_rand < 23
         elem_idx = elem_idx[valid_mantissa]
         bit_idx_rand = bit_idx_rand[valid_mantissa]
+    elif bit_idx == 'exponent' and bit_width == 32:
+        # FP32: Bits 23-30 are exponent
+        valid_exponent = (bit_idx_rand >= 23) & (bit_idx_rand < 31)
+        elem_idx = elem_idx[valid_exponent]
+        bit_idx_rand = bit_idx_rand[valid_exponent]
+    elif bit_idx == 'sign' and bit_width == 32:
+        # FP32: Bit 31 is sign
+        valid_sign = bit_idx_rand == 31
+        elem_idx = elem_idx[valid_sign]
+        bit_idx_rand = bit_idx_rand[valid_sign]
     elif bit_idx == 'mantissa' and bit_width == 16:
         # FP16: Bits 0-9 are mantissa
         valid_mantissa = bit_idx_rand < 10
         elem_idx = elem_idx[valid_mantissa]
         bit_idx_rand = bit_idx_rand[valid_mantissa]
+    elif bit_idx == 'exponent' and bit_width == 16:
+        # FP16: Bits 10-14 are exponent
+        valid_exponent = (bit_idx_rand >= 10) & (bit_idx_rand < 15)
+        elem_idx = elem_idx[valid_exponent]
+        bit_idx_rand = bit_idx_rand[valid_exponent]
+    elif bit_idx == 'sign' and bit_width == 16:
+        # FP16: Bit 15 is sign
+        valid_sign = bit_idx_rand == 15
+        elem_idx = elem_idx[valid_sign]
+        bit_idx_rand = bit_idx_rand[valid_sign]
     
     # Bounds check safety
     valid_mask = elem_idx < flat.numel()
