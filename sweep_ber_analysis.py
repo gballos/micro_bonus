@@ -17,7 +17,17 @@ DEFAULT_WORKER_SCRIPT = "run_ser_analysis.py"
 RANDOM_SEED = 42
 
 # BER ranges to sweep
-BER_RANGES = np.logspace(-9, -2, num=16)
+BER_RANGES = np.array([
+    1e-9, 2e-9, 5e-9,
+    1e-8, 2e-8, 5e-8,
+    1e-7, 2e-7, 5e-7,
+    1e-6, 2e-6, 5e-6,
+    1e-5, 2e-5, 5e-5,
+    1e-4, 2e-4, 5e-4,
+    1e-3, 2e-3, 5e-3,
+    1e-2
+])
+
 DATA_TYPES = ['int4', 'int8', 'fp16', 'fp32']
 
 def parse_args():
