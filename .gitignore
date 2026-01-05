@@ -2,7 +2,4 @@
 **/*.pyc
 stored_models/
 
-results/*
-results/**
-
 data/
