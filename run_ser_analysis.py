@@ -29,6 +29,12 @@ def main():
     parser.add_argument(
         "--bit_idx", type = str, default = 'all', help = "Specific bit index for soft errors ('all' means that errors will be injected in all bits)."
     )
+    parser.add_argument( # ECC addition
+        "--use_ecc", 
+        type=bool, 
+        default=False, 
+        help='Enable SECDED ECC protection simulation.'
+    )
     parser.add_argument(
         "--ber", 
         type = float, 
@@ -138,6 +144,7 @@ def main():
         bit_width = bit_width,
         data_type = args.data_type,
         bit_idx = args.bit_idx,
+        use_ecc = args.use_ecc, # ECC addition 
         target_layers = None,
         random_seed = args.random_seed,
         verbose = args.verbose,
