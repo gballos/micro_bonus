@@ -7,7 +7,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -18,7 +18,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -29,7 +29,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -40,7 +40,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -51,7 +51,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -62,7 +62,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -73,7 +73,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 2.8,
         "random_seed": 42
     },
     {
@@ -84,7 +84,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.6,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -106,7 +106,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 3.2,
+        "accuracy_corrupted": 3.0,
         "random_seed": 42
     },
     {
@@ -139,7 +139,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 3.4,
+        "accuracy_corrupted": 3.2,
         "random_seed": 42
     },
     {
@@ -150,7 +150,7 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 2.8,
+        "accuracy_corrupted": 2.6,
         "random_seed": 42
     },
     {
@@ -161,7 +161,271 @@
         "bit_idx": "all",
         "accuracy_fp": 83.2,
         "accuracy_quantized": 3.2,
-        "accuracy_corrupted": 3.0,
+        "accuracy_corrupted": 2.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0001,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 3.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0002,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 2.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0005,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 3.6,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.001,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 2.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.002,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.005,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 1.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.01,
+        "data_type": "int4",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 3.2,
+        "accuracy_corrupted": 1.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-09,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-09,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 5e-09,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-08,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-08,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 5e-08,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-07,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-07,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 5e-07,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-06,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-06,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 5e-06,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.6,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-05,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-05,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 5e-05,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0001,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 82.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0002,
+        "data_type": "int8",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 83.4,
         "random_seed": 42
     },
     {
@@ -171,8 +435,8 @@
         "data_type": "int8",
         "bit_idx": "all",
         "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 77.0,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 76.4,
         "random_seed": 42
     },
     {
@@ -182,8 +446,8 @@
         "data_type": "int8",
         "bit_idx": "all",
         "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 59.2,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 59.4,
         "random_seed": 42
     },
     {
@@ -193,8 +457,8 @@
         "data_type": "int8",
         "bit_idx": "all",
         "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 20.0,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 21.2,
         "random_seed": 42
     },
     {
@@ -204,8 +468,8 @@
         "data_type": "int8",
         "bit_idx": "all",
         "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 0.4,
+        "accuracy_quantized": 82.8,
+        "accuracy_corrupted": 0.8,
         "random_seed": 42
     },
     {
@@ -215,7 +479,7 @@
         "data_type": "int8",
         "bit_idx": "all",
         "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
+        "accuracy_quantized": 82.8,
         "accuracy_corrupted": 2.0,
         "random_seed": 42
     },
@@ -415,171 +679,6 @@
         "accuracy_fp": 83.2,
         "accuracy_quantized": 83.2,
         "accuracy_corrupted": 2.6,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 2e-08,
-        "data_type": "fp16",
-        "bit_idx": "sign",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 2e-08,
-        "data_type": "fp16",
-        "bit_idx": "all",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.6,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 5e-08,
-        "data_type": "fp16",
-        "bit_idx": "mantissa",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 5e-08,
-        "data_type": "fp16",
-        "bit_idx": "exponent",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.6,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 5e-08,
-        "data_type": "fp16",
-        "bit_idx": "sign",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 5e-08,
-        "data_type": "fp16",
-        "bit_idx": "all",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.6,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 1e-07,
-        "data_type": "fp16",
-        "bit_idx": "mantissa",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 1e-07,
-        "data_type": "fp16",
-        "bit_idx": "exponent",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.4,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 1e-07,
-        "data_type": "fp16",
-        "bit_idx": "sign",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 1e-07,
-        "data_type": "fp16",
-        "bit_idx": "all",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.4,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 2e-07,
-        "data_type": "fp16",
-        "bit_idx": "mantissa",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 2e-07,
-        "data_type": "fp16",
-        "bit_idx": "exponent",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.4,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 2e-07,
-        "data_type": "fp16",
-        "bit_idx": "sign",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 2e-07,
-        "data_type": "fp16",
-        "bit_idx": "all",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 2.4,
-        "random_seed": 42
-    },
-    {
-        "model_name": "resnet50",
-        "dataset": "cifar100",
-        "ber": 5e-07,
-        "data_type": "fp16",
-        "bit_idx": "mantissa",
-        "accuracy_fp": 83.2,
-        "accuracy_quantized": 83.2,
-        "accuracy_corrupted": 83.2,
         "random_seed": 42
     },
     {
@@ -943,6 +1042,347 @@
         "accuracy_fp": 83.2,
         "accuracy_quantized": 83.2,
         "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0002,
+        "data_type": "fp16",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0002,
+        "data_type": "fp16",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0005,
+        "data_type": "fp16",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0005,
+        "data_type": "fp16",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0005,
+        "data_type": "fp16",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 82.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.0005,
+        "data_type": "fp16",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.001,
+        "data_type": "fp16",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.001,
+        "data_type": "fp16",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.001,
+        "data_type": "fp16",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 77.6,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.001,
+        "data_type": "fp16",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.002,
+        "data_type": "fp16",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.002,
+        "data_type": "fp16",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.002,
+        "data_type": "fp16",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 76.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.002,
+        "data_type": "fp16",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.005,
+        "data_type": "fp16",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 82.6,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.005,
+        "data_type": "fp16",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.005,
+        "data_type": "fp16",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 74.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.005,
+        "data_type": "fp16",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.01,
+        "data_type": "fp16",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 81.0,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.01,
+        "data_type": "fp16",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.01,
+        "data_type": "fp16",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 67.6,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 0.01,
+        "data_type": "fp16",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 1.4,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-09,
+        "data_type": "fp32",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-09,
+        "data_type": "fp32",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-09,
+        "data_type": "fp32",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 1e-09,
+        "data_type": "fp32",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-09,
+        "data_type": "fp32",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-09,
+        "data_type": "fp32",
+        "bit_idx": "exponent",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-09,
+        "data_type": "fp32",
+        "bit_idx": "sign",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.2,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 2e-09,
+        "data_type": "fp32",
+        "bit_idx": "all",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.8,
+        "random_seed": 42
+    },
+    {
+        "model_name": "resnet50",
+        "dataset": "cifar100",
+        "ber": 5e-09,
+        "data_type": "fp32",
+        "bit_idx": "mantissa",
+        "accuracy_fp": 83.2,
+        "accuracy_quantized": 83.2,
+        "accuracy_corrupted": 83.2,
         "random_seed": 42
     },
     {
