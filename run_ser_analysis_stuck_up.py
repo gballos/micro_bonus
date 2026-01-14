@@ -65,9 +65,9 @@ def main():
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    dnn_model_name = args.model_name
     print(f"Running {args.model_name} on {device}")
-    model = create_fp_model(args.model_name, args.dataset, device=device)
+    model = create_fp_model(dnn_model = dnn_model_name, dataset = args.dataset, device = device)
 
     if args.dataset == "cifar10":
         _, test_loader, calib_loader = load_cifar10_data(
@@ -98,44 +98,24 @@ def main():
 
     if is_quant:
         print(f"Quantizing with data type {args.data_type}")
-
-        STORE_DIR = "stored_models"
-        os.makedirs(STORE_DIR, exist_ok=True)
-
-        MODEL_PATH = os.path.join(
-        STORE_DIR,
-        f"{dnn_model_name}_{args.dataset}_{args.data_type}.pt",
-    )
-
+        
+    STORE_DIR = "stored_models"
+    MODEL_PATH = os.path.join(STORE_DIR,f"{dnn_model_name}_{args.dataset}_{args.data_type}.pt",)
+    if is_quant:
         if os.path.exists(MODEL_PATH):
             print(f"Loading quantized model from {MODEL_PATH}")
-            correct_model = replace_layers_with_quant(
-                model,
-                bit_width=bit_width,
-                calibrated=True,
-                verbose=False,
-            ).to(device)
-            correct_model.load_state_dict(
-                torch.load(MODEL_PATH, map_location=device)
-            )
+            correct_model = replace_layers_with_quant( model,bit_width=bit_width,calibrated=True,verbose=False, ).to(device)
+            correct_model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
         
         else:
             print("Calibrating quantized model...")
-            correct_model = replace_layers_with_quant(
-                model,
-                bit_width=bit_width,
-                calibrated=False,
-                verbose=False,
-        ).to(device)
-        calibrate_model(working_model, calib_loader, device=device)
-        export_model(working_model, MODEL_PATH)
-
-        acc_clean = evaluate_top1(
-            correct_model, test_loader, device=device
-        )
-        print(
-            f"Accuracy of Quantized Model without Errors: {acc_clean:.2f}%"
-        )
+            correct_model = replace_layers_with_quant(model,bit_width=bit_width,calibrated=False,verbose=False,).to(device)
+            calibrate_model(correct_model, calib_loader, device=device)
+            export_model(correct_model, MODEL_PATH)
+            
+        correct_model.to(device)
+        acc_clean = evaluate_top1( correct_model, test_loader, device=device)
+        print(f"Accuracy of Quantized Model without Errors: {acc_clean:.2f}%")
 
 
     else:
