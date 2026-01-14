@@ -13,7 +13,7 @@ import numpy as np
 # Default Configuration
 DEFAULT_MODEL = "resnet18"
 DEFAULT_DATASET = "cifar10"
-DEFAULT_WORKER_SCRIPT = "run_ser_analysis.py" 
+DEFAULT_WORKER_SCRIPT = "run_ser_analysis_stuck_up.py" 
 RANDOM_SEED = 42
 
 # BER ranges to sweep
