@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Orchestrator for BER (Bit Error Rate) sweep.
-Runs the evaluation script for various data types and error rates.
+Compatible with run_ser_analysis_stuck_up.py
 """
 
 import argparse
@@ -10,13 +10,17 @@ import sys
 from tqdm import tqdm
 import numpy as np
 
+# =======================
 # Default Configuration
+# =======================
 DEFAULT_MODEL = "resnet18"
 DEFAULT_DATASET = "cifar10"
-DEFAULT_WORKER_SCRIPT = "run_ser_analysis_stuck_up.py" 
+DEFAULT_WORKER_SCRIPT = "run_ser_analysis_stuck_up.py"
 RANDOM_SEED = 42
 
-# BER ranges to sweep
+# =======================
+# BER sweep values
+# =======================
 BER_RANGES = np.array([
     1e-9, 2e-9, 5e-9,
     1e-8, 2e-8, 5e-8,
@@ -28,21 +32,27 @@ BER_RANGES = np.array([
     1e-2
 ])
 
-DATA_TYPES = ['int4', 'int8', 'fp16', 'fp32']
+DATA_TYPES = ["int4", "int8", "fp16", "fp32"]
+FP_BITS = ["mantissa", "exponent", "sign"]
+STUCK_VALS = [0, 1]
 
+
+# =======================
+# Argument parsing
+# =======================
 def parse_args():
-    parser = argparse.ArgumentParser(description="Run comprehensive BER sweep analysis.")
-    parser.add_argument("--model_name", type=str, default=DEFAULT_MODEL, help="Name of the model.")
-    parser.add_argument("--dataset", type=str, default=DEFAULT_DATASET, help="Dataset name.")
-    parser.add_argument("--script", type=str, default=DEFAULT_WORKER_SCRIPT, help="Path to the worker script.")
-    parser.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed.")
+    parser = argparse.ArgumentParser( description="Run comprehensive BER sweep analysis")
+    parser.add_argument("--model_name", type=str, default=DEFAULT_MODEL)
+    parser.add_argument("--dataset", type=str, default=DEFAULT_DATASET)
+    parser.add_argument("--script", type=str, default=DEFAULT_WORKER_SCRIPT)
+    parser.add_argument("--seed", type=int, default=RANDOM_SEED)
     return parser.parse_args()
 
-def run_job(script_path, model_name, dataset, data_type, ber, seed, bit_idx='all'):
-    """
-    Executes the worker script for a specific configuration.
-    Relies on the worker script's internal logic to skip if results exist.
-    """
+
+# =======================
+# Run single job
+# =======================
+def run_job(script_path ,model_name ,dataset ,data_type ,ber ,seed ,stuck_val ,bit_idx="all",):
     cmd = [
         sys.executable,
         script_path,
@@ -51,79 +61,92 @@ def run_job(script_path, model_name, dataset, data_type, ber, seed, bit_idx='all
         "--data_type", data_type,
         "--ber", str(ber),
         "--random_seed", str(seed),
-        "--verbose", "False",
+        "--stuck_val", str(stuck_val),
         "--bit_idx", str(bit_idx),
     ]
 
     try:
-        # Run subprocess; suppress stdout/stderr to keep progress bar clean
-        # If you need to debug, remove capture_output=True
-        result = subprocess.run(
-            cmd, 
-            capture_output=True, 
-            text=True, 
-            check=True  # Raises CalledProcessError on non-zero exit code
+        
+        subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=True,
         )
         return True, ""
     except subprocess.CalledProcessError as e:
-        error_msg = e.stderr.strip().split('\n')[-1] if e.stderr else "Unknown Error"
-        return False, error_msg
+        msg = e.stderr.strip().split("\n")[-1] if e.stderr else "Unknown error"
+        return False, msg
     except Exception as e:
         return False, str(e)
 
+
+# =======================
+# Main sweep
+# =======================
 def main():
     args = parse_args()
 
-    bit_idx = ['mantissa', 'exponent', 'sign']
+    tasks = [(dt, ber) for dt in DATA_TYPES for ber in BER_RANGES]
 
-    # 1. Flatten the configuration list for the progress bar
-    tasks = [(dtype, ber) for dtype in DATA_TYPES for ber in BER_RANGES]
-
-    print(f"Starting sweep for {args.model_name} on {args.dataset}")
-    print(f"Total configurations to run: {len(tasks)}")
+    print(f"Starting BER sweep")
+    print(f"Model   : {args.model_name}")
+    print(f"Dataset : {args.dataset}")
+    print(f"Jobs    : {len(tasks)}")
     print("-" * 60)
 
-    # 2. Initialize Progress Bar
-    # ncols=100 ensures the bar doesn't wrap weirdly in small terminals
-    with tqdm(total=len(tasks), unit="job", ncols=100, bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]") as pbar:
-        
+    with tqdm(
+        total=len(tasks),
+        unit="job",
+        ncols=100,
+        bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
+    ) as pbar:
+
         for data_type, ber in tasks:
-            # Update description to show what's currently running
-            pbar.set_description(f"Running {data_type} @ {ber:.1e}")
+            pbar.set_description(f"{data_type} @ {ber:.1e}")
 
-            if data_type in ['fp16', 'fp32']:
-                for bit in bit_idx:
-                    success, error_msg = run_job(
-                        args.script, 
-                        args.model_name, 
-                        args.dataset, 
-                        data_type, 
-                        ber, 
+            # Floating point → per bit
+            if data_type in ["fp16", "fp32"]:
+                for bit in FP_BITS:
+                    for stuck_val in STUCK_VALS:
+                        success, err = run_job(
+                            args.script,
+                            args.model_name,
+                            args.dataset,
+                            data_type,
+                            ber,
+                            args.seed,
+                            stuck_val=stuck_val,
+                            bit_idx=bit,
+                        )
+                        if not success:
+                            tqdm.write(
+                                f"❌ {data_type} {bit} stuck={stuck_val} ber={ber:.1e} | {err}"
+                            )
+
+            # Integer → all bits
+            else:
+                for stuck_val in STUCK_VALS:
+                    success, err = run_job(
+                        args.script,
+                        args.model_name,
+                        args.dataset,
+                        data_type,
+                        ber,
                         args.seed,
-                        bit_idx=bit,
+                        stuck_val=stuck_val,
+                        bit_idx="all",
                     )
-            
-            success, error_msg = run_job(
-                    args.script, 
-                    args.model_name, 
-                    args.dataset, 
-                    data_type, 
-                    ber, 
-                    args.seed,
-                )
+                    if not success:
+                        tqdm.write(
+                            f"❌ {data_type} stuck={stuck_val} ber={ber:.1e} | {err}"
+                        )
 
-
-            
-            if not success:
-                # If a job fails, we print above the progress bar so it persists
-                tqdm.write(f"❌ Failed: {data_type} @ {ber:.1e} | Error: {error_msg}")
-            
-            # Since your main.py skips existing runs internally, 
-            # this loop will just move very fast for finished jobs.
             pbar.update(1)
 
     print("-" * 60)
-    print("Sweep Complete.")
+    print("✅ Sweep Complete")
+
 
 if __name__ == "__main__":
     main()
