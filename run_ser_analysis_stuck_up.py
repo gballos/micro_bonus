@@ -144,7 +144,7 @@ def main():
         if args.data_type == "fp16":
             if args.verbose:
                 print("Converting model to FP16...")
-            correct_model = working_model.half()
+            correct_model = correct_model.half()
 
         print(
             f"Using {args.data_type.upper()} model "
